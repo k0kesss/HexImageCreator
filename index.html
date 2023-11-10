@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+HexImageCreator
+</title>
+<style>
+html {
+margin:0;
+padding:0;
+font-family:"Trebuchet MS", Helvetica, sans-serif;
+}
+svg {
+cursor:pointer;
+transform: rotate(90deg);
+}
+svg:hover #arrow{
+fill:green;
+}
+#main {
+display:-webkit-inline-box;
+width: 868px;
+height: 768px;
+margin:0px;
+padding:0px;
+}
+#menu {
+display:flex;
+flex-wrap: nowrap;
+min-width:300px;
+width:766px;
+height:auto;
+margin-bottom:5px;
+}
+#one_menu {
+display: block;
+min-width: 150px;
+width:150px;
+height:auto;
+border-right:1px solid black;
+margin-bottom:5px;
+margin-top:5px;
+padding-right:5px;
+}
+#one_menu input {
+float:right;
+}
+#two_menu {
+margin-top:10px;
+width: 200px;
+height: 75px;
+margin-left: 10px;
+}
+#box_w {
+padding:5px;
+}
+#box_h {
+padding:5px;
+}
+#box_size {
+padding:5px;
+}
+#pole {
+display:block;
+float:left;
+margin:0px;
+padding:0px;
+}
+#resultdiv {
+display:block;
+border:1px solid white;
+padding:0px;
+margin:0px;
+height:auto;
+width:auto;
+font-size:10px;
+}
+#resultdiv2 {
+display:none;
+flex-wrap: nowrap;
+width:fit-content;
+padding:0px;
+margin:0px;
+height:auto;
+border:1px solid white;
+font-size:10px;
+}
+</style>
+</head>
+<body>
+<div id="menu">
+<div id="one_menu">
+<div id="box_w">
+<label>Width:<input type="number" id="bowWnum" name="nboxWnum" min="5" max="64" value="64" onchange="bowWnumclick()" /></label>
+</div>
+<div id="box_h">
+<label>Height:<input type="number" id="bowHnum" name="nboxHnum" min="5" max="64" value="64" onchange="bowHnumclick()" /></label>
+</div>
+<div id="box_size">
+<label>Size:<input type="number" id="boxSize" name="nboxSize" min="10" max="50" value="10" onchange="boxSizeclick()" /></label>
+</div>
+</div>
+<div id="two_menu">
+<svg id="svgg" width="20px" height="20px" viewBox="0 -2 32 32" onclick="svgClick()">
+<g id="arrow" transform="translate(-360.000000, -933.000000)" fill="#000000">
+<path d="M388,933 L368,933 C365.791,933 364,934.791 364,937 L364,941 L366,941 L366,937 C366,935.896 366.896,935 368,935 L388,935 C389.104,935 390,935.896 390,937 L390,957 C390,958.104 389.104,959 388,959 L368,959 C366.896,959 366,958.104 366,957 L366,953 L364,953 L364,957 C364,959.209 365.791,961 368,961 L388,961 C390.209,961 392,959.209 392,957 L392,937 C392,934.791 390.209,933 388,933 L388,933 Z M377.343,953.243 C376.953,953.633 376.953,954.267 377.343,954.657 C377.733,955.048 378.367,955.048 378.758,954.657 L385.657,947.758 C385.865,947.549 385.954,947.272 385.94,947 C385.954,946.728 385.865,946.451 385.657,946.243 L378.758,939.344 C378.367,938.953 377.733,938.953 377.343,939.344 C376.953,939.733 376.953,940.367 377.343,940.758 L382.586,946 L361,946 C360.447,946 360,946.448 360,947 C360,947.553 360.447,948 361,948 L382.586,948 L377.343,953.243 L377.343,953.243 Z">
+</path>
+</g>
+</svg>
+</div>
+</div>
+<div id="main">
+<div id="pole"></div>
+<div id="resultdiv"></div>
+</div>
+<div id="resultdiv2"></div>
+<script>
+var bits = 64;
+var main_page = document.getElementById("main");
+var pole_page = document.getElementById("pole");
+var resultdiv = document.getElementById("resultdiv");
+var resultdiv2 = document.getElementById("resultdiv2");
+var boxSize = document.getElementById("boxSize");
+var bowWnum = document.getElementById("bowWnum");
+var bowHnum = document.getElementById("bowHnum");
+var svgg = document.getElementById("svgg");
+var box = new Array(boxW_H);
+var boxW_H = Number(boxSize.value);
+var strok = Number(bowWnum.value);
+var radov = Number(bowHnum.value);
+var result = new Array(strok);
+var arr = new Array(strok);
+for (var i = 0; i < strok; i++) {
+    arr[i] = new Array(radov);
+	for(var z = 0; z < radov; z++) {
+		arr[i][z] = 0;
+	}
+}
+var mainWidth = radov * (Number(boxSize.value) + 2);
+var mainHeight = strok * (Number(boxSize.value) + 2);
+var pole = document.getElementById("pole");
+pole.style.width = mainWidth + "px";
+pole.style.height = mainHeight + "px";
+for(var x = 0; x < strok; x++) {
+	let zaz = document.createElement("div");
+	zaz.innerHTML = "0x0000000000000000";
+	zaz.style.width = "auto";
+	zaz.style.height = "10px";
+	zaz.style.border = "1px solid white";
+	zaz.style.margin = "0px";
+	zaz.style.padding = "0px";
+	zaz.style.lineHeight = "10px";
+	zaz.className = "result_box";
+	if(x==0) { zaz.style.borderTop = "0px"; }
+	else if(x==strok-1) { zaz.style.borderBottom = "0px";}
+	resultdiv.appendChild(zaz);
+	let zaz2 = document.createElement("div");
+	zaz2.innerHTML = "0x0000000000000000";
+	zaz2.style.width = "10px";
+	zaz2.style.height = "100px";
+	zaz2.style.wordBreak = "break-all";
+	zaz2.style.border = "1px solid white";
+	if(x==0) { zaz2.style.borderLeft = "0px"; }
+	else if(x==radov-1) { zaz2.style.borderRight = "0px";}
+	zaz2.style.margin = "0px";
+	zaz2.style.padding = "0px";
+	zaz2.style.textAlign = "center";
+	zaz2.style.lineHeight = "9px";
+	zaz2.className = "result_box2";
+	resultdiv2.appendChild(zaz2);
+}
+var result_boxes = document.getElementsByClassName("result_box");
+var result_boxes2 = document.getElementsByClassName("result_box2");
+pole.addEventListener('click', function (event) {
+	if(event.target.id == "pole") return;
+	let numbox = new Array(2);
+	numbox = event.target.id.split('_');
+	let clickdiv = event.target;
+	if(clickdiv.style.background === "white") {
+		clickdiv.style.background = "black";
+		arr[numbox[0]-1][numbox[1]-1] = 1;
+	}
+	else {
+		clickdiv.style.background = "white";
+		arr[numbox[0]-1][numbox[1]-1] = 0;
+	}
+	let popa = "";
+	if(rightEntry == true) {
+		for(var x=0; x < bits; x++) {
+			popa += arr[numbox[0]-1][x];
+		}
+		result_boxes[Number(numbox[0]-1)].innerHTML = binaryToHex(popa);
+	}
+	else {
+		for(var x=0; x < bits; x++) {
+			popa += arr[x][numbox[1]-1];
+		}
+		result_boxes2[Number(numbox[1]-1)].innerHTML = binaryToHex(popa);
+	}
+	
+	
+});
+
+for(var y=0; y<strok; y++) {
+	for(var x=0; x<radov; x++) {
+		box[x] = document.createElement("div");
+		box[x].style.width = boxW_H + "px";
+		box[x].style.height = boxW_H + "px";
+		box[x].style.background = "white";
+		box[x].style.border = "1px solid black";
+		box[x].style.color = "white";
+		box[x].style.float = "left";
+		box[x].innerHTML = "";
+		box[x].className = "change_box";
+		box[x].id = (y+1) + "_" + (x+1);
+		pole.appendChild(box[x]);
+	}
+}
+function binaryToHex(s) {
+    var i, k, part, accum, ret = '';
+    for (i = s.length-1; i >= 3; i -= 4) {
+        part = s.substr(i+1-4, 4);
+        accum = 0;
+        for (k = 0; k < 4; k += 1) {
+            if (part[k] !== '0' && part[k] !== '1') {
+                return null;
+            }
+            accum = accum * 2 + parseInt(part[k], 10);
+        }
+        if (accum >= 10) {
+            ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
+        } else {
+            ret = String(accum) + ret;
+        }
+    }
+    if (i >= 0) {
+        accum = 0;
+        for (k = 0; k <= i; k += 1) {
+            if (s[k] !== '0' && s[k] !== '1') {
+                return null;
+            }
+            accum = accum * 2 + parseInt(s[k], 10);
+        }
+        ret = String(accum) + ret;
+    }
+    return "0x" + ret;
+}
+var k0ke = document.getElementsByClassName("change_box");
+var prewSize = Number(boxSize.value);
+function boxSizeclick() {
+	if(prewSize == Number(boxSize.value)) return;
+	var numS = Number(boxSize.value);
+	if(numS < 51 && numS > 9) {
+		prewSize = numS;
+		for(var pp = 0; pp < k0ke.length; pp ++) {
+			k0ke[pp].style.width = numS + "px";
+			k0ke[pp].style.height = numS + "px";
+		}
+		let wMain = (Number(bowWnum.value) * numS) + 2;
+		pole.style.width = wMain + "px";
+		pole.style.height = wMain + "px";
+		reload_result_box();
+		reload_result_box2();
+	}
+	
+}
+function bowHnumclick() {
+	let prob = Number(boxSize.value)
+	if(prob !== prewSize || prob > 9 || prob < 51) {
+		boxSizeclick();
+	}
+	let relW = Number(bowWnum.value);
+	let thisHzel = Number(bowHnum.value);
+	for(var pp = 0; pp < k0ke.length; pp++) {
+		let numbox = new Array(2);
+		numbox = k0ke[pp].id.split('_');
+		let helH = Number(numbox[0]);
+		let helW = Number(numbox[1]);
+		let kek = false;
+		if(thisHzel < helH) { kek = true;}
+		if(relW < helW) { kek = true; }
+		if(kek == true) {
+			k0ke[pp].style.display = "none";
+			k0ke[pp].style.background = "white";
+			arr[helH - 1][helW - 1] = 0;
+		}
+		else {
+			k0ke[pp].style.display = "block";
+		}
+	}
+	reload_result_box();
+	reload_result_box2();
+}
+function bowWnumclick() {
+	let prob = Number(boxSize.value)
+	if(prob !== prewSize || prob > 9 || prob < 51) {
+		boxSizeclick();
+	}
+	let thisWzel = Number(bowWnum.value);
+	let zelH = Number(bowHnum.value);
+	for(var pp = 0; pp < k0ke.length; pp++) {
+		let numbox = new Array(2);
+		numbox = k0ke[pp].id.split('_');
+		let helH = Number(numbox[0]);
+		let helW = Number(numbox[1]);
+		let kek = false;
+		if(thisWzel < helW) { kek = true;}
+		if(zelH < helH) { kek = true; }
+		if(kek == true) {
+			k0ke[pp].style.display = "none";
+			k0ke[pp].style.background = "white";
+			arr[helH - 1][helW - 1] = 0;
+		}
+		else {
+			k0ke[pp].style.display = "block";
+		}
+	}
+	reload_result_box();
+	reload_result_box2();
+}
+function reload_result_box() {
+	let numS = Number(boxSize.value);
+	let strok = Number(bowWnum.value);
+	let radov = Number(bowHnum.value);
+	let wMain = strok * (numS + 2);
+	let hMain = radov * (numS + 2);
+	for(var x=0; x < result_boxes.length; x++) {
+		let strhelp = "";
+		if(x >= radov) {
+			result_boxes[x].style.display = "none";
+		}
+		else {
+			result_boxes[x].style.display = "block";
+			let lineR = numS;
+			if(lineR >= 30) lineR = lineR / 2;
+			result_boxes[x].style.lineHeight = numS + "px";
+			result_boxes[x].style.height = numS + "px";
+			result_boxes[x].style.fontSize = lineR + "px";
+			if(strok > 32) bits = 64;
+			else if(strok <= 32 && strok > 16) bits = 32;
+			else if(strok <= 16) bits = 16;
+			for(var z = 0; z < bits; z++) {
+				strhelp += arr[x][z];
+			}
+		}
+		result_boxes[x].innerHTML = binaryToHex(strhelp);
+	}
+	pole.style.width = wMain + "px";
+	pole.style.height = hMain + "px";
+	let summ = resultdiv.offsetWidth + pole_page.offsetWidth + 5;
+	main_page.style.width = summ + "px";
+	main_page.style.height = pole_page.offsetHeight + "px";
+	menu.style.width = (pole_page.offsetWidth-2) + "px";
+}
+function reload_result_box2() {
+	let numS = Number(boxSize.value);
+	let strok = Number(bowWnum.value);
+	let radov = Number(bowHnum.value);
+	let wMain = strok * (numS + 2);
+	let hMain = radov * (numS + 2);
+	for(var x=0; x < result_boxes2.length; x++) {
+		let strhelp = "";
+		if(x >= strok) {
+			result_boxes2[x].style.display = "none";
+		}
+		else {
+			result_boxes2[x].style.display = "block";
+			let lineR = numS;
+			let ese = lineR;
+			if(lineR >= 30) {
+				lineR = lineR / 1.5;
+				ese -= 12;
+			}
+			result_boxes2[x].style.lineHeight = ese + "px";
+			result_boxes2[x].style.width = numS + "px";
+			result_boxes2[x].style.fontSize = lineR + "px";
+			if(radov > 32) bits = 64;
+			else if(radov <= 32 && radov > 16) bits = 32;
+			else if(radov <= 16) bits = 16;
+			for(var z = 0; z < bits; z++) {
+				strhelp += arr[z][x];
+			}
+		}
+		let zak = binaryToHex(strhelp);
+		var newstrhelp = "";
+		for(var y = 0; y < zak.length; y++) {
+			tra = false;
+			newstrhelp += zak[y] + "<br>";
+		}
+		result_boxes2[x].innerHTML = newstrhelp;
+	}
+	pole.style.width = wMain + "px";
+	pole.style.height = hMain + "px";
+	let summ = resultdiv.offsetWidth + pole_page.offsetWidth + 5;
+	main_page.style.width = summ + "px";
+	main_page.style.height = pole_page.offsetHeight + "px";
+	menu.style.width = (pole_page.offsetWidth-2) + "px";
+}
+var rightEntry = true;
+function svgClick() {
+	let numS = Number(boxSize.value);
+	let strok = Number(bowWnum.value);
+	let radov = Number(bowHnum.value);
+	if(numS < 5 || numS > 50) return;
+	else if(strok < 5 || strok > 64) return;
+	else if(radov < 5 || radov > 64) return;
+	if(rightEntry == true) {
+		svgg.style.transform = "rotate(0deg)";
+		rightEntry = false;
+		resultdiv2.style.display = "flex";
+		resultdiv.style.display = "none";
+		reload_result_box2();
+	}
+	else {
+		svgg.style.transform = "rotate(90deg)";
+		rightEntry = true;
+		resultdiv2.style.display = "none";
+		resultdiv.style.display = "block";
+		reload_result_box();
+	}
+}
+</script>
+</body>
+</html>
